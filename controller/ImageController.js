@@ -23,6 +23,20 @@ function ImageController() {
         });
     };
 
+    function urlAllowed(url) {
+        var domain;
+        if (url.indexOf("://") > -1) {
+            domain = url.split('/')[2];
+        }
+        else {
+            domain = url.split('/')[0];
+        }
+        domain = domain.split(':')[0];
+
+        return !(config.allowedDomains.indexOf(domain) === -1);
+
+    }
+
     return {
         resize: (req, res) => {
 
@@ -30,6 +44,11 @@ function ImageController() {
             var width = req.query.width;
             var height = req.query.height;
             var crop = req.query.crop;
+
+            if (!urlAllowed(url)){
+                res.send('domain not allowed');
+                return;
+            }
 
             var fileHash = lib.sha1(url);
             var ext = url.split('.')[url.split('.').length - 1];
