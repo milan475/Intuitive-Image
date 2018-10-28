@@ -71,7 +71,7 @@ function ImageController() {
                         .gravity('Center')
                         .crop(width, height)
                         .write(resizedImageSavePath, function (err) {
-                            if (err) { res.json(err); return };
+                            if (err) { console.log(err); res.json(err); return };
                             res.sendFile(resizedImageSavePath);
                         });
 
@@ -87,7 +87,7 @@ function ImageController() {
                     gm(savePath)
                         .resize(width, height)
                         .write(resizedImageSavePath, function (err) {
-                            if (err) { res.json(err); return };
+                    	    if (err) { console.log(err); res.json(err); return };
                             res.sendFile(resizedImageSavePath);
                         });
                 }
@@ -97,7 +97,7 @@ function ImageController() {
                 resizeAndReturnImage(savePath);
             } else {
                 download(url, savePath, (err) => {
-                    if (err) { res.json(err); return };
+                    if (err) { console.log(err); res.json(err); return };
                     resizeAndReturnImage(savePath);
                 });
             }
