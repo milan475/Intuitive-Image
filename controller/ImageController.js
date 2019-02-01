@@ -32,6 +32,9 @@ function ImageController() {
             domain = url.split('/')[0];
         }
         domain = domain.split(':')[0];
+				domain = domain.split('.');
+				domain = domain[domain.length-2] + '.' + domain[domain.length-1];
+				console.log(domain);
 
         return !(config.allowedDomains.indexOf(domain) === -1);
 
