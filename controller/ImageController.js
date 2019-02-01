@@ -2,7 +2,7 @@ var https = require('https');
 var http = require('http');
 var fs = require('fs');
 var lib = require(root + '/lib/lib.js');
-var gm = require('gm');
+var jimp = require('jimp');
 
 function ImageController() {
 
@@ -44,8 +44,8 @@ function ImageController() {
         resize: (req, res) => {
 
             var url = req.query.url;
-            var width = req.query.width;
-            var height = req.query.height;
+            var width = parseInt(req.query.width);
+            var height = parseInt(req.query.height);
             var crop = req.query.crop;
 
             if (!urlAllowed(url)){
@@ -60,7 +60,7 @@ function ImageController() {
 
             var resizeAndReturnImage = function (savePath) {
 
-                if (crop) {
+                if (crop && crop != 'false') {
 
                     var resizedImageSavePath = root + '/cache/resized/' + fileHash + '-' + width + 'x' + height + '-crop.' + ext;
 
@@ -69,14 +69,17 @@ function ImageController() {
                         return;
                     }
 
-                    gm(savePath)
-                        .resize(width, height, '^')
-                        .gravity('Center')
-                        .crop(width, height)
-                        .write(resizedImageSavePath, function (err) {
+										jimp.read(savePath)
+										  .then(image => {
+										      image.cover(width, height)
+										      .write(resizedImageSavePath,function (err) {
                             if (err) { console.log(err); res.json(err); return };
                             res.sendFile(resizedImageSavePath);
                         });
+										  })
+										  .catch(err => {
+										    console.error(err);
+										  });
 
                 } else {
 
@@ -86,13 +89,18 @@ function ImageController() {
                         res.sendFile(resizedImageSavePath);
                         return;
                     }
-
-                    gm(savePath)
-                        .resize(width, height)
-                        .write(resizedImageSavePath, function (err) {
-                    	    if (err) { console.log(err); res.json(err); return };
+                    
+											jimp.read(savePath)
+										  .then(image => {
+										      image.resize(width, height)
+										      .write(resizedImageSavePath,function (err) {
+                            if (err) { console.log(err); res.json(err); return };
                             res.sendFile(resizedImageSavePath);
                         });
+										  })
+										  .catch(err => {
+										    console.error(err);
+										  });
                 }
             }
 
